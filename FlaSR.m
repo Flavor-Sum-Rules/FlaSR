@@ -20,12 +20,12 @@ An ExternalFunction object indicating the FlaSR.py file has been loaded into the
 generateASRs::usage="generateASRs[in,h,out] finds all amplitudes and amplitude sum rules (ASRs) for a given system.";
 generateASRs::details=
 "Arguments:
-in (List): Contains U-spins (Real) OR particle multiplets (List of Strings) in the incoming state.
-h (List): Contains U-spins (Real) OR coefficients (List of Symbols) in the Hamiltonian.
-out (List): Contains U-spins (Real) OR particle multiplets (List of Strings) in the outgoing state.
+in (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the incoming state.
+h (List): Contains U-spins (Real) or coefficients (List of Symbols) in the Hamiltonian.
+out (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the outgoing state.
 
 Options:
-phys (True|False): Indicates whether function arguments contain U-spins (False) or particle multiplets/CKM factors (True). Default: phys->False.
+phys (True|False): Indicates whether function arguments contain U-spins (False) or particle multiplets/Hamiltonian factors (True). Default: phys->False.
 
 Returns:
 system (Association): All information about the system's representations, amplitudes, and ASRs. Keys and values:
@@ -57,12 +57,12 @@ A2SRMat (List): Matrix of A2SR coefficients derived from the ASR matrix. Note: t
 generateSRs::usage="generateSRs[in,h,out] finds all amplitudes, amplitude sum rules (ASRs), and amplitude-squared sum rules (A2SRs) for a given system.";
 generateSRs::details=
 "Arguments:
-in (List): Contains U-spins (Real) OR particle multiplets (List of Strings) in the incoming state.
-h (List): Contains U-spins (Real) OR coefficients (List of Symbols) in the Hamiltonian.
-out (List): Contains U-spins (Real) OR particle multiplets (List of Strings) in the outgoing state.
+in (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the incoming state.
+h (List): Contains U-spins (Real) or coefficients (List of Symbols) in the Hamiltonian.
+out (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the outgoing state.
 
 Options:
-phys (True|False): Indicates whether function arguments contain U-spins (False) or particle multiplets/CKM factors (True). Default: phys->False.
+phys (True|False): Indicates whether function arguments contain U-spins (False) or particle multiplets/Hamiltonian factors (True). Default: phys->False.
 obs (\"Diff\"|\"Int\"): Indicates whether A2SRs should be treated as the sum rules between differential (\"Diff\") or integrated (\"Int\") observables. Only in effect when phys->True. Default: obs->\"Diff\".
 
 Returns:
@@ -87,9 +87,9 @@ system (Association): All information about the system's representations, amplit
 - \"n A2SRs\" (List): Contains the number of amplitude-squared sum rules (Real) at each order of breaking.
 - \"A2SRs\" (List): Contains matrices of amplitude-squared sum rule coefficients (Real) corresponding to each order of breaking.
 - \"SR extract\" (List): Contains sum rule coefficient matrices at the selected b. If only ampType (amp2Type) is specified, contains only ASR (A2SR) coefficients. If both ampType and amp2Type are specified, contains A2SR coefficients. Initialized to None by generateSRs and redefined after running printSystem.
-- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (Symbols) or contains formatted vectors for a- and s-type amplitudes (List of Symbols) for the system. Initialized to None by generateSRs and redefined after running printSystem.";
+- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (or |A\!\(\*SuperscriptBox[\(|\), \(2\)]\) amplitudes-squared) (Symbols) or contains vectors of formatted a/s-type amplitudes (or \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared) (List of Symbols) for the system. Initialized to None by generateSRs and redefined after running printSystem.";
 
-numAmps::usage="numAmps[system,nPairs:False] returns the total number of amplitudes or amplitude pairs in the system.";
+numAmps::usage="numAmps[system,nPairs:False] returns the total number of amplitudes (or amplitude pairs) in the system.";
 numAmps::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
@@ -98,14 +98,14 @@ Options:
 nPairs (True|False): Indicates whether to return the number of amplitudes (False) or amplitude pairs (True). Default: nPairs: False.
 
 Returns:
-The total number of amplitudes or amplitude pairs in the system (Real).";
+The total number of amplitudes (or amplitude pairs) in the system (Real).";
 
 labelAmps::usage="labelAmps[system,colName,labels] modifies system to add a column of user-defined labels to system[[\"Amplitudes\"]]."
 labelAmps::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
 colName (String): Name of new column to add to amplitudes table.
-labels (List): Contains labels (String) for each amplitude or amplitude pair. Number of labels must equal number of amplitudes or amplitude pairs.
+labels (List): Contains labels (String) for each amplitude (or amplitude pair). Number of labels must equal number of amplitudes (or amplitude pairs).
 
 Options:
 labeling (String): Labeling mode to indicate whether user is labeling single amplitudes (\"Amplitudes\") or amplitude pairs (\"Amplitude pairs\"). Default: labeling->\"Amplitudes\".
@@ -131,7 +131,7 @@ system (Association): A system association. See the documentation for generateSR
 Options:
 showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitudes table (True) or not (False). Default: showFactors->False.";
 
-numSRs::usage="numSRs[system,squared:False] returns the number of amplitude or amplitude-squared sum rules at each order of breaking.";
+numSRs::usage="numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules at each order of breaking.";
 numSRs::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
@@ -143,7 +143,7 @@ b (All|Real|List): Breaking order(s) at which to print sum rules. User can print
 Returns:
 Number of amplitude (or amplitude-squared) sum rules at each order of breaking (List of Reals).";
 
-printSRs::usage="printSRs[system,ampType->{a,s}/{A} OR amp2Type->{\[CapitalDelta],\[CapitalSigma]}/{A}] prints amplitude or amplitude-squared sum rules at each order of breaking, returns the printed matrices, and modifies the amplitude vector(s) in the system association.";
+printSRs::usage="printSRs[system,ampType->{a,s}/{A} OR amp2Type->{\[CapitalDelta],\[CapitalSigma]}/{A}] prints amplitude (or amplitude-squared) sum rules at each order of breaking and extracts the formatted sum rule matrices and amplitude vector(s) for manipulation.";
 printSRs::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
@@ -161,7 +161,7 @@ amp2Quad (True|False): Indicates whether the symbol in amp2Type is quadratically
 Returns:
 system[[\"SR extract\"]] (List): Modified value of the \"SR extract\" key to the system association. Contains sum rule coefficient matrices at the selected b. If only ampType (amp2Type) is specified, contains only ASR (A2SR) coefficients. If both ampType and amp2Type are specified, contains A2SR coefficients.
 Other modified keys and values of the system assocation:
-- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (Symbols) or contains formatted vectors for a- and s-type amplitudes (List of Symbols) for the system.";
+- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (or |A\!\(\*SuperscriptBox[\(|\), \(2\)]\) amplitudes-squared) (Symbols) or contains vectors of formatted a/s-type amplitudes (or \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared) (List of Symbols) for the system.";
 
 printSystem::usage="printSystem[system,ampType->{a,s}/{A}, amp2Type->{\[CapitalDelta],\[CapitalSigma]}/{A}] prints information about the system's representations, amplitudes, and sum rules and adds formatted sum rules and amplitude vectors to the system association.";
 printSystem::details=
@@ -187,7 +187,7 @@ amp2Quad (True|False): Indicates whether the symbol in amp2Type is quadratically
 Returns:
 system (Association): The inputted system association, modified to include formatted sum rule coefficient matrices and amplitude vector(s). Modified keys and values:
 - \"SR extract\" (List): Contains sum rule coefficient matrices at the selected b. If only ampType (amp2Type) is specified, contains only ASR (A2SR) coefficients. If both ampType and amp2Type are specified, contains A2SR coefficients.
-- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (Symbols) or contains formatted vectors for a- and s-type amplitudes (List of Symbols) for the system.";
+- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (or |A\!\(\*SuperscriptBox[\(|\), \(2\)]\) amplitudes-squared) (Symbols) or contains vectors of formatted a/s-type amplitudes (or \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared) (List of Symbols) for the system.";
 
 
 Begin["`Private`"];
