@@ -302,7 +302,7 @@ class System:
         aux = self.aux
         irreps = [map(Fraction,state) for state in self.inputs] if reps else 0
         n = int(self.n)
-        p = (-1)**self.p
+        p = 1 if (self.p % 2 == 0) else -1
         return aux, irreps, n, p
 
 class Lattice:
