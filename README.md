@@ -25,7 +25,7 @@ Please follow our [guide](docs/python_help.md) to ensure your computer is proper
    ```
    printSystem[system,ampType->{a,s},amp2Type->{Δ,Σ}];
    ```
-   The program will print information about the system's representations, amplitudes, amplitude sum rules, and amplitude-squared sum rules. A sum rule displayed at order b is interpreted to be broken by corrections of the next order, O(ε<sup>b+1</sup>), where ε is the small symmetry-breaking parameter (~0.3 for U-spin).
+   The program will print information about the system's representations, amplitudes, amplitude sum rules, and amplitude-squared sum rules. A sum rule displayed at order b is interpreted to be broken by corrections of the next order, O(ε<sup>b+1</sup>), where ε is the small symmetry-breaking parameter (~20-30% for U-spin).
 
 # Help
 
@@ -34,7 +34,7 @@ To view the complete list of functions and variables in this package, type in
    ?FlaSR`*
    ```
 
-For details on a function's arguments, options, and outputs, run
+For details on a FlaSR function's arguments, options, and outputs, run
    ```
    FlaSRHelp[function];
    ```
