@@ -279,8 +279,22 @@ system=pyEval["define_system",{reps,phys}];
 defineSystem::argx="Invalid input. Number of would-be doublets is `1`. Please enter a system with an even number of doublets.";
 
 
+(* Divides out common factors in matrix rows *)
+simplifyFactors[mat_]:=(#/(If[Positive[DeleteCases[#,0][[1]]],1,-1]*Sqrt[Apply[GCD,DeleteCases[#,0]^2]]))&/@Cases[mat,Except@{0..}];
+
+
+(* Sets a matrix column to 0 *)
+setMatColToZero[mat_,col_]:=Module[{matVal=mat},
+matVal=If[matVal=={},
+{},
+(matVal[[All,col]]=0;
+matVal)
+]
+];
+
+
 Options[generateASRs]={phys->False};
-generateASRs[in_,h_,out_,OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],particles,aux,ASRs,amplitudes,dupPairs,factorsMat,simplifyFactors,irreps,n,p,nAmps,nASRs},
+generateASRs[in_,h_,out_,OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],particles,aux,ASRs,amplitudes,dupPairs,factorsMat,irreps,n,p,indices,selfConj,nAmps,nASRs},
 {system,particles}=defineSystem[in,h,out,phys]; (* constructs Python System object *)
 
 aux=pyEval["System.extract_sys",system][[1]];
@@ -297,12 +311,25 @@ ASRs=Transpose[Delete[Transpose[#],List/@dupPairs[[All,2]]]]&/@ASRs; (* deletes 
 system=pyEval["System.remove_dups",{system,dupPairs}];
 amplitudes=extractAmps[system,partVal->particles];
 
-amplitudes=KeyDrop[#,"q factor"]&/@amplitudes;
-simplifyFactors[mat_]:=(#/(If[Positive[DeleteCases[#,0][[1]]],1,-1]*Sqrt[Apply[GCD,DeleteCases[#,0]^2]]))&/@mat;
-ASRs=If[aux,Map[RowReduce,ASRs],Map[simplifyFactors,ASRs]]; (* simplifies factors/row reduces (for systems requiring symmetrization) *)
-ASRs=Map[Cases[Except@{0..}],ASRs];
-
 {irreps,n,p}=pyEval["System.extract_sys",{system,True}][[2;;]];
+amplitudes=KeyDrop[#,"q factor"]&/@amplitudes;
+
+(* Set identically 0 amplitude columns to 0 *)
+indices=amplitudes[[All,"Binary indices"]];
+selfConj=Table[If[indices[[i,1]]==indices[[i,2]],i,Nothing],{i,Length[indices]}];
+If[Length[selfConj]>0,
+ASRs=MapIndexed[If[#1=={},
+{},
+If[(p==1)==OddQ[First[#2]], (* if p==1, a (odd) is 0, otherwise s (even) is 0 *)
+setMatColToZero[#1,selfConj[[1]]],
+#1
+]
+]&,
+ASRs
+]
+];
+ASRs=If[aux,Map[RowReduce,ASRs],Map[simplifyFactors,ASRs]]; (* simplifies factors, row reduces for systems requiring symmetrization to remove redundant SRs *)
+ASRs=Map[Cases[Except@{0..}],ASRs];
 
 system=<|"Amplitudes"->amplitudes,"ASRs"->ASRs|>; (* from here on, system is an association *)
 nAmps=numAmps[system];
@@ -344,7 +371,7 @@ A2SRMat
 
 
 Options[generateSRs]={phys->False,obs->"Diff"};
-generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],ASRs,A2SRs,integrateA2SRs,nA2SRs},
+generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],ASRs,A2SRs,integrateA2SRs,indices,selfConj,nA2SRs},
 system=generateASRs[in,h,out,Sequence@@FilterRules[{opts},Options[generateASRs]]];
 
 ASRs=system[["ASRs"]];
@@ -419,7 +446,25 @@ A2SRs=Map[If[#=={},{},Cases[RowReduce@#,Except@{0..}]]&,A2SRs];
 system[["Unique amp pairs"]]=Keys[uniqueAmps]; (* add unique amp pairs key to system assoc *)
 ];
 
-If[phys&&(obs==="Int"),integrateA2SRs[],Null];
+If[phys&&(obs==="Int"),integrateA2SRs[]];
+
+(* Set identically 0 amplitude-squared columns to 0 *)
+indices=If[phys&&(obs==="Int"),system[["Amplitudes",system[["Unique amp pairs"]]]][[All,"Binary indices"]],system[["Amplitudes"]][[All,"Binary indices"]]];
+selfConj=Table[If[indices[[i,1]]==indices[[i,2]],i,Nothing],{i,Length[indices]}];
+If[Length[selfConj]>0,
+A2SRs=MapIndexed[If[#1=={},
+{},
+If[OddQ[First[#2]], (* self conj \[CapitalDelta] is 0 *)
+setMatColToZero[#1,selfConj[[1]]],
+#1
+]
+]&,
+A2SRs
+]
+];
+A2SRs=simplifyFactors/@A2SRs;
+A2SRs=Map[Cases[Except@{0..}],A2SRs];
+
 system[["Amplitudes"]]=KeyDrop["Multiplet indices"]/@system[["Amplitudes"]]; (* removes this key only when using generateSRs, but not generateASRs *)
 nA2SRs=Table[Length[A2SRs[[i]]],{i,Length[A2SRs]}];
 
@@ -615,11 +660,11 @@ vecList=If[!physAmps,{vec1,ampsToVector[syms[[2]]]},{vec1,vec1}];
 vecList=If[Length[selfConj]>0,
 (If[physAmps,
 Map[Delete[#,2*selfConj[[1]]]&,vecList],
-Delete[vecList,{If[EvenQ[p],1,2],selfConj[[1]]}]
+Delete[vecList,{If[squared,1,If[(p==1),1,2]],selfConj[[1]]}] (* for \[CapitalDelta]/\[CapitalSigma] drop \[CapitalDelta], for a/s drop a if p==1 else drop s *)
 ]
 ),
 vecList
-]; (* for A/A^2, delete conj of self-conj amp; for a/s/\[CapitalDelta]/\[CapitalSigma], delete 0 cols *)
+]; (* for A/|A|^2, delete conj of self-conj amp; for a/s/\[CapitalDelta]/\[CapitalSigma], delete equivalently 0 cols *)
 vecList
 ];
 
@@ -657,7 +702,7 @@ indices=amplitudes[[All,"Binary indices"]];
 selfConj=Table[If[indices[[i,1]]==indices[[i,2]],i,Nothing],{i,Length[indices]}];
 
 physAmps=Switch[Length[syms],
-1,True, (* A/A^2 *)
+1,True, (* A/|A|^2 *)
 2,False, (* a/s/\[CapitalDelta]/\[CapitalSigma] *)
 _,(Message[printSRs::invalidformat];Return[$Failed])
 ]; (* indicate whether amplitudes are phys (True) or group-theoretic (False) *)
@@ -668,10 +713,18 @@ Null
 If[physAmps,
 formatSRMats[amplitudes],
 If[Length[selfConj]>0,
-SRs=MapIndexed[If[#1=={},{},If[EvenQ[p]==OddQ[First[#2]],Transpose[Delete[Transpose[#1],selfConj[[1]]]],#1]]&,SRs],
-Null
+SRs=MapIndexed[If[#1=={},
+{},
+If[If[squared,True,p==1]==OddQ[First[#2]], (* for \[CapitalDelta]/\[CapitalSigma] drop for \[CapitalDelta] (odd), for a/s drop for a (odd) if p==1 else drop for s (even) *)
+Transpose[Delete[Transpose[#1],selfConj[[1]]]],
+#1
+]
+]&,
+SRs
+]
 ]
 ]; (* for phys amps, double widths of SRs matrices, add CKM and p factors. for group-theoretic, correct for self-conj amps *)
+SRs=simplifyFactors/@SRs;
 ampVectors=ampsToVectors[amplitudes]; (* return list of two vectors of amplitudes; the two vecs are the same in phys case *)
 
 bList=listbOrders[b,Length[SRs]];
