@@ -2,6 +2,7 @@ import numpy as np
 from math import comb,prod,factorial
 from itertools import product
 from fractions import Fraction
+from sympy import Matrix
 
 class Multiplet:
     '''
@@ -328,23 +329,9 @@ class Lattice:
         for amp in system.amp_pairs:
             lattice.append(np.array(amp.node))
         return lattice
-
-    def gram_schmidt(self,A,tol=1e-12): # keeps LI rows of matrix using gram-schmidt; avoids need for row reduction
-        A = np.asarray(A,dtype=float)
-        Q = np.zeros((0,A.shape[1]),dtype=float)
-        ind_rows = []
-
-        for i in range(A.shape[0]):
-            row = A[i].copy()
-            if Q.shape[0] > 0:
-                residual = row-Q.T@(Q@row)
-            else:
-                residual = row
-            norm_residual = np.linalg.norm(residual)
-            if norm_residual > tol*np.linalg.norm(row):
-                ind_rows.append(i)
-                Q = np.vstack([Q,residual/norm_residual])
-        return ind_rows
+    
+    def find_li_rows(self,A): # keeps LI rows of matrix
+        return list(Matrix(A.tolist()).T.rref()[1])
 
     def find_sum_rules(self):
         d = self.d
@@ -367,9 +354,9 @@ class Lattice:
 
                 amps = np.array(latt) # arr dim: num of amps x d
                 matches = (np_b_subspaces[:,None,:,:] == amps[None,:,None,:]).all(axis=-1) # arr dim: num of SRs x num of amps x l
-                b_srs = matches.sum(axis=-1) # arr dim: num of SRs x num of amps
-
-                ind_rows = self.gram_schmidt(b_srs) # remove LD rows from b_srs matrix
+                b_srs = matches.sum(axis=-1) # arr dim: num of SRs x num of amps at a given b
+                
+                ind_rows = self.find_li_rows(b_srs) # remove LD rows from b_srs matrix
                 b_srs = b_srs[ind_rows]
 
                 nonzero_rows = np.any(b_srs != 0,axis=1) # remove rows of 0s from b_srs matrix (redundant...)
