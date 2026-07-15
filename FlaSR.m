@@ -341,7 +341,9 @@ system
 
 
 findA2SRMat[ASRMat_]:=Module[{ASRMatRR,pivotCols,freeCols,freeMat,groupedIndices,indices,colPairs,xMat,xMatNullSpace,groupedA2SR,A2SRMat},
-ASRMatRR=RowReduce[ASRMat];
+If[ASRMat=={},
+A2SRMat={},
+(ASRMatRR=RowReduce[ASRMat];
 
 pivotCols=Map[Position[#,1][[1,1]]&,ASRMatRR];
 freeCols=Complement[Range[Length[Transpose[ASRMatRR]]],pivotCols];
@@ -365,16 +367,27 @@ groupedA2SR=Join[IdentityMatrix[Length[ASRMatRR]],-(freeMat^2),2];
 ];
 
 A2SRMat=If[groupedA2SR=={},{},Transpose@Table[Transpose[groupedA2SR][[indices[[i]]]],{i,Length[indices]}]]; (* rearranges A^2SR mat into original order *)
+)
+];
 
 A2SRMat
 ];
 
 
 Options[generateSRs]={phys->False,obs->"Diff"};
-generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],ASRs,A2SRs,integrateA2SRs,indices,selfConj,nA2SRs},
+generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],ASRs,keepMatchingSRs,A2SRs,integrateA2SRs,indices,selfConj,nA2SRs},
 system=generateASRs[in,h,out,Sequence@@FilterRules[{opts},Options[generateASRs]]];
 
 ASRs=system[["ASRs"]];
+keepMatchingSRs[ASRMat_,b_]:=Module[{lowerASRMat},
+If[EvenQ[b]&&(b>=2),
+(lowerASRMat=Transpose[NullSpace[ASRs[[b]]]];
+If[lowerASRMat=={},{},Pick[ASRMat,Map[MatchQ[#,{0..}]&,ASRMat . lowerASRMat],True]]
+),
+ASRMat
+]
+];
+If[VectorQ[Flatten@system[["Irreps"]],IntegerQ],ASRs=MapIndexed[keepMatchingSRs[#1,#2[[1]]-1]&,ASRs]]; (* for integer-only cases: for ASR matrices with even b >= 2, remove rows not in the row space of the b-1 ASR matrix *)
 A2SRs=Map[findA2SRMat,ASRs];
 
 (* diff and int observables *)
@@ -680,7 +693,7 @@ If[squared,Print["Amplitude-squared sum rules"],Print["Amplitude sum rules"]];
 MapIndexed[
 Print["b = ",bList[[#2[[1]]]],"\n",
 "Number of SRs: ",numSRsList[[#2[[1]]]],"\n",
-If[#1=={},"No sum rules at this order.",matForm[#1]//TraditionalForm]
+If[#1=={},"No sum rules found at this order.",matForm[#1]//TraditionalForm]
 ]&,
 writtenSRs[[bList+1]]
 ];
