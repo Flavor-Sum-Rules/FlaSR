@@ -61,15 +61,15 @@ For this to be possible, you must have a Python installation on your computer. T
 
 
 
-## 3. Install NumPy
-The Python script requires the NumPy package to run. If you followed Option A, your installation should already include NumPy. Otherwise, you may have to manually install it.
+## 3. Install NumPy and SymPy
+The Python script requires the NumPy and SymPy packages to run. If you followed Option A, your installation may already include NumPy. Otherwise, you may have to manually install it.
 
-1. In Mathematica, see if you can import NumPy:
+1. In Mathematica, see if you can import NumPy and SymPy:
    ```
-   ExternalEvaluate["Python","import numpy as np; print(np.__version__)"]
+   ExternalEvaluate["Python","import numpy; import sympy; print(numpy.__version__); print(sympy.__version__)"]
    ```
    
-2. If this runs successfully, your computer is ready to run the Mathematica package. Otherwise, enter the following in your terminal or command prompt to add NumPy to your Python installation:
+2. If this runs successfully, your computer is ready to run the Mathematica package. Otherwise, enter the following in your terminal or command prompt to add NumPy and SymPy to your Python installation:
    ```
-   pip install numpy
+   pip install numpy sympy
    ```
