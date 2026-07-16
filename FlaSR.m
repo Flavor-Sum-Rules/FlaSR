@@ -387,7 +387,7 @@ If[lowerASRMat=={},{},Pick[ASRMat,Map[MatchQ[#,{0..}]&,ASRMat . lowerASRMat],Tru
 ASRMat
 ]
 ];
-If[VectorQ[Flatten@system[["Irreps"]],IntegerQ],ASRs=MapIndexed[keepMatchingSRs[#1,#2[[1]]-1]&,ASRs]]; (* for integer-only cases: for ASR matrices with even b >= 2, remove rows not in the row space of the b-1 ASR matrix *)
+If[AnyTrue[Flatten@system[["Irreps"]],#==(1/2)&],ASRs,ASRs=MapIndexed[keepMatchingSRs[#1,#2[[1]]-1]&]]; (* for no-doublets cases: for ASR matrices with even b >= 2, remove rows not in the row space of the b-1 ASR matrix *)
 A2SRs=Map[findA2SRMat,ASRs];
 
 (* diff and int observables *)
