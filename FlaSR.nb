@@ -10,10 +10,10 @@
 NotebookFileLineBreakTest
 NotebookFileLineBreakTest
 NotebookDataPosition[       154,          7]
-NotebookDataLength[    244309,       4901]
-NotebookOptionsPosition[    241596,       4862]
-NotebookOutlinePosition[    242021,       4879]
-CellTagsIndexPosition[    241978,       4876]
+NotebookDataLength[    249132,       5004]
+NotebookOptionsPosition[    246419,       4965]
+NotebookOutlinePosition[    246844,       4982]
+CellTagsIndexPosition[    246801,       4979]
 WindowFrame->Normal*)
 
 (* Beginning of Notebook Content *)
@@ -1835,9 +1835,10 @@ Cell[BoxData[{
        RowBox[{"phys", "=", 
         RowBox[{"OptionValue", "[", "phys", "]"}]}], ",", 
        RowBox[{"obs", "=", 
-        RowBox[{"OptionValue", "[", "obs", "]"}]}], ",", "ASRs", ",", 
-       "keepMatchingSRs", ",", "A2SRs", ",", "integrateA2SRs", ",", "indices",
-        ",", "selfConj", ",", "nA2SRs"}], "}"}], ",", "\[IndentingNewLine]", 
+        RowBox[{"OptionValue", "[", "obs", "]"}]}], ",", "keepMatchingSRs", ",",
+        "noDoublets", ",", "ASRs", ",", "A2SRs", ",", "integrateA2SRs", ",", 
+       "indices", ",", "selfConj", ",", "nA2SRs"}], "}"}], ",", 
+     "\[IndentingNewLine]", 
      RowBox[{
       RowBox[{"system", "=", 
        RowBox[{"generateASRs", "[", 
@@ -1848,50 +1849,67 @@ Cell[BoxData[{
             RowBox[{"{", "opts", "}"}], ",", 
             RowBox[{"Options", "[", "generateASRs", "]"}]}], "]"}]}]}], 
         "]"}]}], ";", "\[IndentingNewLine]", "\[IndentingNewLine]", 
-      RowBox[{"ASRs", "=", 
-       RowBox[{"system", "[", 
-        RowBox[{"[", "\"\<ASRs\>\"", "]"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{"Find", " ", "A2SRs", " ", "for", " ", "given", " ", "ASRs"}], 
+       " ", "*)"}], "\[IndentingNewLine]", 
       RowBox[{
        RowBox[{"keepMatchingSRs", "[", 
-        RowBox[{"ASRMat_", ",", "b_"}], "]"}], ":=", 
+        RowBox[{"matList_", ",", "i_"}], "]"}], ":=", 
        RowBox[{"Module", "[", 
         RowBox[{
-         RowBox[{"{", "lowerASRMat", "}"}], ",", "\[IndentingNewLine]", 
-         RowBox[{"If", "[", 
-          RowBox[{
+         RowBox[{"{", 
+          RowBox[{"mat", ",", "lowerMat"}], "}"}], ",", "\[IndentingNewLine]", 
+         RowBox[{
+          RowBox[{"mat", "=", 
+           RowBox[{"matList", "[", 
+            RowBox[{"[", "i", "]"}], "]"}]}], ";", "\[IndentingNewLine]", 
+          RowBox[{"lowerMat", "=", 
+           RowBox[{"matList", "[", 
+            RowBox[{"[", 
+             RowBox[{"i", "-", "1"}], "]"}], "]"}]}], ";", 
+          "\[IndentingNewLine]", "\[IndentingNewLine]", 
+          RowBox[{"If", "[", 
            RowBox[{
-            RowBox[{"EvenQ", "[", "b", "]"}], "&&", 
-            RowBox[{"(", 
-             RowBox[{"b", ">=", "2"}], ")"}]}], ",", "\[IndentingNewLine]", 
-           RowBox[{"(", 
             RowBox[{
-             RowBox[{"lowerASRMat", "=", 
-              RowBox[{"Transpose", "[", 
-               RowBox[{"NullSpace", "[", 
-                RowBox[{"ASRs", "[", 
-                 RowBox[{"[", "b", "]"}], "]"}], "]"}], "]"}]}], ";", 
-             "\[IndentingNewLine]", 
-             RowBox[{"If", "[", 
-              RowBox[{
-               RowBox[{"lowerASRMat", "==", 
-                RowBox[{"{", "}"}]}], ",", 
-               RowBox[{"{", "}"}], ",", 
-               RowBox[{"Pick", "[", 
-                RowBox[{"ASRMat", ",", 
-                 RowBox[{"Map", "[", 
-                  RowBox[{
+             RowBox[{"(", 
+              RowBox[{"lowerMat", "==", 
+               RowBox[{"{", "}"}]}], ")"}], "||", 
+             RowBox[{"(", 
+              RowBox[{"mat", "==", 
+               RowBox[{"{", "}"}]}], ")"}]}], ",", "\[IndentingNewLine]", 
+            RowBox[{"{", "}"}], ",", "\[IndentingNewLine]", 
+            RowBox[{"(", 
+             RowBox[{
+              RowBox[{"lowerMat", "=", 
+               RowBox[{"Transpose", "[", 
+                RowBox[{"NullSpace", "[", "lowerMat", "]"}], "]"}]}], ";", 
+              "\[IndentingNewLine]", 
+              RowBox[{"If", "[", 
+               RowBox[{
+                RowBox[{"lowerMat", "==", 
+                 RowBox[{"{", "}"}]}], ",", 
+                RowBox[{"{", "}"}], ",", 
+                RowBox[{"Pick", "[", 
+                 RowBox[{"mat", ",", 
+                  RowBox[{"Map", "[", 
                    RowBox[{
+                    RowBox[{
                     RowBox[{"MatchQ", "[", 
                     RowBox[{"#", ",", 
                     RowBox[{"{", 
                     RowBox[{"0", ".."}], "}"}]}], "]"}], "&"}], ",", 
-                   RowBox[{"ASRMat", ".", "lowerASRMat"}]}], "]"}], ",", 
-                 "True"}], "]"}]}], "]"}]}], "\[IndentingNewLine]", ")"}], ",",
-            "\[IndentingNewLine]", "ASRMat"}], "\[IndentingNewLine]", "]"}]}],
-         "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
-      RowBox[{"If", "[", 
+                    RowBox[{"mat", ".", "lowerMat"}]}], "]"}], ",", "True"}], 
+                 "]"}]}], "]"}]}], "\[IndentingNewLine]", ")"}]}], 
+           "\[IndentingNewLine]", "]"}]}]}], "\[IndentingNewLine]", "]"}]}], ";",
+       " ", 
+      RowBox[{"(*", " ", 
        RowBox[{
+       "checks", " ", "for", " ", "matching", " ", "sum", " ", "rules", " ", 
+        "when", " ", "deriving", " ", 
+        RowBox[{"Delta", "/", "Sigma"}], " ", "A2SRs"}], " ", "*)"}], 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      RowBox[{"noDoublets", "=", 
+       RowBox[{"!", 
         RowBox[{"AnyTrue", "[", 
          RowBox[{
           RowBox[{"Flatten", "@", 
@@ -1900,16 +1918,37 @@ Cell[BoxData[{
           RowBox[{
            RowBox[{"#", "==", 
             RowBox[{"(", 
-             RowBox[{"1", "/", "2"}], ")"}]}], "&"}]}], "]"}], ",", "ASRs", ",", 
+             RowBox[{"1", "/", "2"}], ")"}]}], "&"}]}], "]"}]}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"ASRs", "=", 
+       RowBox[{"system", "[", 
+        RowBox[{"[", "\"\<ASRs\>\"", "]"}], "]"}]}], ";", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{"noDoublets", ",", "\[IndentingNewLine]", 
         RowBox[{"ASRs", "=", 
          RowBox[{"MapIndexed", "[", 
           RowBox[{
-           RowBox[{"keepMatchingSRs", "[", 
-            RowBox[{"#1", ",", 
+           RowBox[{
+            RowBox[{"If", "[", 
              RowBox[{
-              RowBox[{"#2", "[", 
-               RowBox[{"[", "1", "]"}], "]"}], "-", "1"}]}], "]"}], "&"}], 
-          "]"}]}]}], "]"}], ";", " ", 
+              RowBox[{
+               RowBox[{"EvenQ", "[", 
+                RowBox[{
+                 RowBox[{"#2", "[", 
+                  RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], "]"}], "&&", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"#2", "[", 
+                   RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], ">=", "2"}], 
+                ")"}]}], ",", 
+              RowBox[{"keepMatchingSRs", "[", 
+               RowBox[{"ASRs", ",", 
+                RowBox[{"#2", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}]}], "]"}], ",", "#1"}], "]"}], 
+            "&"}], ",", "ASRs"}], "]"}]}]}], "\[IndentingNewLine]", "]"}], ";",
+       " ", 
       RowBox[{"(*", " ", 
        RowBox[{
         RowBox[{
@@ -1925,13 +1964,55 @@ Cell[BoxData[{
          "remove", " ", "rows", " ", "not", " ", "in", " ", "the", " ", "row",
            " ", "space", " ", "of", " ", "the", " ", "b"}], "-", 
          RowBox[{"1", " ", "ASR", " ", "matrix"}]}]}], " ", "*)"}], 
-      "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", 
       RowBox[{"A2SRs", "=", 
        RowBox[{"Map", "[", 
         RowBox[{"findA2SRMat", ",", "ASRs"}], "]"}]}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"If", "[", 
+       RowBox[{"noDoublets", ",", "\[IndentingNewLine]", 
+        RowBox[{"A2SRs", "=", 
+         RowBox[{"MapIndexed", "[", 
+          RowBox[{
+           RowBox[{
+            RowBox[{"If", "[", 
+             RowBox[{
+              RowBox[{
+               RowBox[{"OddQ", "[", 
+                RowBox[{
+                 RowBox[{"#2", "[", 
+                  RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], "]"}], "&&", 
+               RowBox[{"(", 
+                RowBox[{
+                 RowBox[{
+                  RowBox[{"#2", "[", 
+                   RowBox[{"[", "1", "]"}], "]"}], "-", "1"}], ">=", "3"}], 
+                ")"}]}], ",", 
+              RowBox[{"keepMatchingSRs", "[", 
+               RowBox[{"A2SRs", ",", 
+                RowBox[{"#2", "[", 
+                 RowBox[{"[", "1", "]"}], "]"}]}], "]"}], ",", "#1"}], "]"}], 
+            "&"}], ",", "A2SRs"}], "]"}]}]}], "\[IndentingNewLine]", "]"}], ";",
+       " ", 
       RowBox[{"(*", " ", 
-       RowBox[{"diff", " ", "and", " ", "int", " ", "observables"}], " ", 
+       RowBox[{
+        RowBox[{
+         RowBox[{"for", " ", "no"}], "-", 
+         RowBox[{"doublets", " ", 
+          RowBox[{"cases", ":", " ", 
+           RowBox[{
+            RowBox[{
+            "for", " ", "A2SR", " ", "matrices", " ", "with", " ", "odd", " ",
+              "b"}], " ", ">=", " ", "3"}]}]}]}], ",", " ", 
+        RowBox[{
+         RowBox[{
+         "remove", " ", "rows", " ", "not", " ", "in", " ", "the", " ", "row",
+           " ", "space", " ", "of", " ", "the", " ", "b"}], "-", 
+         RowBox[{"1", " ", "A2SR", " ", "matrix"}]}]}], " ", "*)"}], 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
+      RowBox[{"(*", " ", 
+       RowBox[{"Diff", " ", "and", " ", "int", " ", "observables"}], " ", 
        "*)"}], "\[IndentingNewLine]", 
       RowBox[{
        RowBox[{"integrateA2SRs", "[", "]"}], ":=", 
@@ -2421,7 +2502,8 @@ Cell[BoxData[{
          RowBox[{"(", 
           RowBox[{"obs", "===", "\"\<Int\>\""}], ")"}]}], ",", 
         RowBox[{"integrateA2SRs", "[", "]"}]}], "]"}], ";", 
-      "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
       RowBox[{"(*", " ", 
        RowBox[{
         RowBox[{"Set", " ", 
@@ -2448,6 +2530,7 @@ Cell[BoxData[{
          RowBox[{"phys", "&&", 
           RowBox[{"(", 
            RowBox[{"obs", "===", "\"\<Int\>\""}], ")"}]}], ",", 
+         "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"system", "[", 
            RowBox[{"[", 
@@ -2457,12 +2540,13 @@ Cell[BoxData[{
            "]"}], "[", 
           RowBox[{"[", 
            RowBox[{"All", ",", "\"\<Binary indices\>\""}], "]"}], "]"}], ",", 
+         "\[IndentingNewLine]", 
          RowBox[{
           RowBox[{"system", "[", 
            RowBox[{"[", "\"\<Amplitudes\>\"", "]"}], "]"}], "[", 
           RowBox[{"[", 
            RowBox[{"All", ",", "\"\<Binary indices\>\""}], "]"}], "]"}]}], 
-        "]"}]}], ";", "\[IndentingNewLine]", 
+        "\[IndentingNewLine]", "]"}]}], ";", "\[IndentingNewLine]", 
       RowBox[{"selfConj", "=", 
        RowBox[{"Table", "[", 
         RowBox[{
@@ -2520,7 +2604,8 @@ Cell[BoxData[{
           RowBox[{"Except", "@", 
            RowBox[{"{", 
             RowBox[{"0", ".."}], "}"}]}], "]"}], ",", "A2SRs"}], "]"}]}], ";",
-       "\[IndentingNewLine]", "\[IndentingNewLine]", 
+       "\[IndentingNewLine]", "\[IndentingNewLine]", "\[IndentingNewLine]", 
+      "\[IndentingNewLine]", 
       RowBox[{
        RowBox[{"system", "[", 
         RowBox[{"[", "\"\<Amplitudes\>\"", "]"}], "]"}], "=", 
@@ -2676,8 +2761,26 @@ Cell[BoxData[{
    3.9615417358937874`*^9}, {3.961541900889986*^9, 3.9615419265066776`*^9}, {
    3.9615419606548996`*^9, 3.961541975953802*^9}, {3.961587801616091*^9, 
    3.961587801820879*^9}, {3.961588153745062*^9, 3.9615881596874065`*^9}, {
-   3.961693890091589*^9, 
-   3.9616939538459663`*^9}},ExpressionUUID->"177df5f8-cd48-a340-9004-\
+   3.961693890091589*^9, 3.9616939538459663`*^9}, {3.9620310329949646`*^9, 
+   3.9620310538437614`*^9}, {3.9620310849218082`*^9, 3.962031105952482*^9}, {
+   3.962031196395178*^9, 3.9620312002365246`*^9}, {3.962031239693556*^9, 
+   3.9620312414931984`*^9}, {3.962031335218519*^9, 3.96203137254142*^9}, {
+   3.962031444434908*^9, 3.9620314892860184`*^9}, {3.9620315591884537`*^9, 
+   3.9620315704779167`*^9}, {3.962031616284752*^9, 3.9620316458681755`*^9}, {
+   3.962031757949583*^9, 3.9620318177904186`*^9}, {3.9620318488146267`*^9, 
+   3.9620318571891365`*^9}, {3.9620318991962147`*^9, 
+   3.9620319938399506`*^9}, {3.962032054090351*^9, 3.962032054244463*^9}, {
+   3.962032097160137*^9, 3.962032117506119*^9}, {3.962032170700781*^9, 
+   3.962032220487295*^9}, {3.9620323813565216`*^9, 3.9620324253671875`*^9}, {
+   3.9620330683331394`*^9, 3.962033081006481*^9}, {3.962033511135803*^9, 
+   3.962033523916992*^9}, {3.962033557638857*^9, 3.9620335581759834`*^9}, {
+   3.9620338778397217`*^9, 3.9620338937865257`*^9}, {3.9620340419554596`*^9, 
+   3.962034349166977*^9}, {3.962034379273121*^9, 3.9620344170402126`*^9}, {
+   3.9620344667064266`*^9, 3.9620345081283875`*^9}, {3.9620348618006725`*^9, 
+   3.9620348887031116`*^9}, {3.962035013701252*^9, 3.962035043084757*^9}, {
+   3.9620353719615803`*^9, 3.962035401420782*^9}, {3.962035721882223*^9, 
+   3.962035829627573*^9}, 3.9620361170928917`*^9, {3.962036384262947*^9, 
+   3.9620364249031105`*^9}},ExpressionUUID->"177df5f8-cd48-a340-9004-\
 9eace09315f3"],
 
 Cell[BoxData[
@@ -4891,18 +4994,18 @@ Cell[64863, 1191, 1349, 38, 54, "Code",ExpressionUUID->"1a966156-7046-ac48-9e3b-
 Cell[66215, 1231, 1173, 31, 138, "Code",ExpressionUUID->"47a7611f-1656-dd4a-ae6a-d1acadb4f739"],
 Cell[67391, 1264, 16017, 347, 658, "Code",ExpressionUUID->"b8f38615-5711-ca47-ad73-f311a43e531b"],
 Cell[83411, 1613, 8984, 201, 490, "Code",ExpressionUUID->"da012e0a-cee7-224a-ad56-ca00333196cc"],
-Cell[92398, 1816, 40866, 864, 1557, "Code",ExpressionUUID->"177df5f8-cd48-a340-9004-9eace09315f3"],
-Cell[133267, 2682, 1958, 44, 124, "Code",ExpressionUUID->"e76c6bd5-7ca7-904b-9202-4c539d870962"],
-Cell[135228, 2728, 600, 12, 40, "Code",ExpressionUUID->"4b1e724e-0657-e848-b72c-fd2c5e841adc"],
-Cell[135831, 2742, 9556, 194, 447, "Code",ExpressionUUID->"d3f0884b-1669-1d49-8918-ef4b8bcf66e9"],
-Cell[145390, 2938, 2940, 65, 194, "Code",ExpressionUUID->"6b6e045b-b322-8a42-a08a-b172d08b7c58"],
-Cell[148333, 3005, 8257, 173, 300, "Code",ExpressionUUID->"652dbf7d-bb33-d140-b908-715ec4001dc0"],
-Cell[156593, 3180, 3243, 79, 236, "Code",ExpressionUUID->"835ed265-edbd-0343-ac5a-5fe68b21eabd"],
-Cell[159839, 3261, 4539, 103, 264, "Code",ExpressionUUID->"ddaa38d6-bebf-664b-b090-3c7a18bc0853"],
-Cell[164381, 3366, 68026, 1305, 2173, "Code",ExpressionUUID->"8fb53ad9-48f1-744a-a398-94d20fa92c0f"],
-Cell[232410, 4673, 8811, 175, 531, "Code",ExpressionUUID->"2197a131-6a81-2e48-8602-9fd79d754800"],
-Cell[241224, 4850, 180, 4, 40, "Code",ExpressionUUID->"2f822f98-bfdf-524f-8f12-6e99387e6417"],
-Cell[241407, 4856, 185, 4, 40, "Code",ExpressionUUID->"4ce7445f-e663-9240-be66-c08c579c3c16"]
+Cell[92398, 1816, 45689, 967, 1852, "Code",ExpressionUUID->"177df5f8-cd48-a340-9004-9eace09315f3"],
+Cell[138090, 2785, 1958, 44, 124, "Code",ExpressionUUID->"e76c6bd5-7ca7-904b-9202-4c539d870962"],
+Cell[140051, 2831, 600, 12, 40, "Code",ExpressionUUID->"4b1e724e-0657-e848-b72c-fd2c5e841adc"],
+Cell[140654, 2845, 9556, 194, 447, "Code",ExpressionUUID->"d3f0884b-1669-1d49-8918-ef4b8bcf66e9"],
+Cell[150213, 3041, 2940, 65, 194, "Code",ExpressionUUID->"6b6e045b-b322-8a42-a08a-b172d08b7c58"],
+Cell[153156, 3108, 8257, 173, 300, "Code",ExpressionUUID->"652dbf7d-bb33-d140-b908-715ec4001dc0"],
+Cell[161416, 3283, 3243, 79, 236, "Code",ExpressionUUID->"835ed265-edbd-0343-ac5a-5fe68b21eabd"],
+Cell[164662, 3364, 4539, 103, 264, "Code",ExpressionUUID->"ddaa38d6-bebf-664b-b090-3c7a18bc0853"],
+Cell[169204, 3469, 68026, 1305, 2173, "Code",ExpressionUUID->"8fb53ad9-48f1-744a-a398-94d20fa92c0f"],
+Cell[237233, 4776, 8811, 175, 531, "Code",ExpressionUUID->"2197a131-6a81-2e48-8602-9fd79d754800"],
+Cell[246047, 4953, 180, 4, 40, "Code",ExpressionUUID->"2f822f98-bfdf-524f-8f12-6e99387e6417"],
+Cell[246230, 4959, 185, 4, 40, "Code",ExpressionUUID->"4ce7445f-e663-9240-be66-c08c579c3c16"]
 }
 ]
 *)

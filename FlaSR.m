@@ -375,22 +375,36 @@ A2SRMat
 
 
 Options[generateSRs]={phys->False,obs->"Diff"};
-generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],ASRs,keepMatchingSRs,A2SRs,integrateA2SRs,indices,selfConj,nA2SRs},
+generateSRs[in_,h_,out_,opts:OptionsPattern[]]:=Module[{system,phys=OptionValue[phys],obs=OptionValue[obs],keepMatchingSRs,noDoublets,ASRs,A2SRs,integrateA2SRs,indices,selfConj,nA2SRs},
 system=generateASRs[in,h,out,Sequence@@FilterRules[{opts},Options[generateASRs]]];
 
-ASRs=system[["ASRs"]];
-keepMatchingSRs[ASRMat_,b_]:=Module[{lowerASRMat},
-If[EvenQ[b]&&(b>=2),
-(lowerASRMat=Transpose[NullSpace[ASRs[[b]]]];
-If[lowerASRMat=={},{},Pick[ASRMat,Map[MatchQ[#,{0..}]&,ASRMat . lowerASRMat],True]]
-),
-ASRMat
-]
-];
-If[AnyTrue[Flatten@system[["Irreps"]],#==(1/2)&],ASRs,ASRs=MapIndexed[keepMatchingSRs[#1,#2[[1]]-1]&]]; (* for no-doublets cases: for ASR matrices with even b >= 2, remove rows not in the row space of the b-1 ASR matrix *)
-A2SRs=Map[findA2SRMat,ASRs];
+(* Find A2SRs for given ASRs *)
+keepMatchingSRs[matList_,i_]:=Module[{mat,lowerMat},
+mat=matList[[i]];
+lowerMat=matList[[i-1]];
 
-(* diff and int observables *)
+If[(lowerMat=={})||(mat=={}),
+{},
+(lowerMat=Transpose[NullSpace[lowerMat]];
+If[lowerMat=={},{},Pick[mat,Map[MatchQ[#,{0..}]&,mat . lowerMat],True]]
+)
+]
+]; (* checks for matching sum rules when deriving Delta/Sigma A2SRs *)
+
+noDoublets=!AnyTrue[Flatten@system[["Irreps"]],#==(1/2)&];
+ASRs=system[["ASRs"]];
+If[noDoublets,
+ASRs=MapIndexed[If[EvenQ[#2[[1]]-1]&&(#2[[1]]-1>=2),keepMatchingSRs[ASRs,#2[[1]]],#1]&,ASRs]
+]; (* for no-doublets cases: for ASR matrices with even b >= 2, remove rows not in the row space of the b-1 ASR matrix *)
+
+A2SRs=Map[findA2SRMat,ASRs];
+If[noDoublets,
+A2SRs=MapIndexed[If[OddQ[#2[[1]]-1]&&(#2[[1]]-1>=3),keepMatchingSRs[A2SRs,#2[[1]]],#1]&,A2SRs]
+]; (* for no-doublets cases: for A2SR matrices with odd b >= 3, remove rows not in the row space of the b-1 A2SR matrix *)
+
+
+
+(* Diff and int observables *)
 integrateA2SRs[]:=Module[{inMulti,outMulti,ampIndices,uniqueInMulti,uniqueOutMulti,canonInMulti,canonOutMulti,formIndexPairs,ampIndexPairs,uniqueAmps,convertToAmpPairs,negCols,identicalColGroups,negMatCols,integrateA2SRMat},
 inMulti=system[["Multiplets"]][[1]];
 outMulti=system[["Multiplets"]][[3]];
@@ -461,8 +475,13 @@ system[["Unique amp pairs"]]=Keys[uniqueAmps]; (* add unique amp pairs key to sy
 
 If[phys&&(obs==="Int"),integrateA2SRs[]];
 
+
+
 (* Set identically 0 amplitude-squared columns to 0 *)
-indices=If[phys&&(obs==="Int"),system[["Amplitudes",system[["Unique amp pairs"]]]][[All,"Binary indices"]],system[["Amplitudes"]][[All,"Binary indices"]]];
+indices=If[phys&&(obs==="Int"),
+system[["Amplitudes",system[["Unique amp pairs"]]]][[All,"Binary indices"]],
+system[["Amplitudes"]][[All,"Binary indices"]]
+];
 selfConj=Table[If[indices[[i,1]]==indices[[i,2]],i,Nothing],{i,Length[indices]}];
 If[Length[selfConj]>0,
 A2SRs=MapIndexed[If[#1=={},
@@ -477,6 +496,8 @@ A2SRs
 ];
 A2SRs=simplifyFactors/@A2SRs;
 A2SRs=Map[Cases[Except@{0..}],A2SRs];
+
+
 
 system[["Amplitudes"]]=KeyDrop["Multiplet indices"]/@system[["Amplitudes"]]; (* removes this key only when using generateSRs, but not generateASRs *)
 nA2SRs=Table[Length[A2SRs[[i]]],{i,Length[A2SRs]}];
