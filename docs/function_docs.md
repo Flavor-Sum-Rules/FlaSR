@@ -2,22 +2,22 @@
 
 ## List of functions
 
-- [FlaSRHelp](#FlaSRHelp): FlaSRHelp[function] prints extended documentation on a function's arguments, options, and outputs.
+- [FlaSRHelp](#FlaSRHelp): FlaSRHelp[function] prints extended documentation on a FlaSR function's arguments, options, and outputs.
 - [startPythonSession](#startPythonSession): startPythonSession[session,path] checks for a valid Python session and file path and loads in the Python file.
-- [generateASRs](#generateASRs): generateASRs[in,h,out] finds all amplitudes and amplitude sum rules (ASRs) for a given system.
+- [generateASRs](#generateASRs): generateASRs[in,h,out] finds amplitudes and amplitude sum rules (ASRs) for a given system.
 - [findA2SRMat](#findA2SRMat): findA2SRMat[ASRMat] finds the A2SR matrix for a given ASR matrix.
-- [generateSRs](#generateSRs): generateSRs[in,h,out] finds all amplitudes, amplitude sum rules (ASRs), and amplitude-squared sum rules (A2SRs) for a given system.
+- [generateSRs](#generateSRs): generateSRs[in,h,out] finds amplitudes, amplitude sum rules (ASRs), and amplitude-squared sum rules (A2SRs) for a given system.
 - [numAmps](#numAmps): numAmps[system,nPairs:False] returns the total number of amplitudes in the system.
 - [labelAmps](#labelAmps): labelAmps[system,colName,labels] modifies system to add a column of user-defined labels to system[[\"Amplitudes\"]].
 - [unlabelAmps](#unlabelAmps): unlabelAmps[system,colNames] modifies system to remove column(s) from system[[\"Amplitudes\"]].
 - [printAmps](#printAmps): printAmps[system] prints the system's amplitudes and definitions for a/s-type amplitudes and Δ/Σ-type amplitudes-squared.
-- [numSRs](#numSRs): numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules at each order of breaking.
+- [numSRs](#numSRs): numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules found at each order of breaking.
 - [printSRs](#printSRs): printSRs[system,ampType->{a,s}/{A} OR amp2Type->{Δ,Σ}/{A}] prints amplitude (or amplitude-squared) sum rules at each order of breaking and extracts the formatted sum rule matrices and amplitude vector(s) for manipulation.
 - [printSystem](#printSystem): printSystem[system,ampType->{a,s}/{A}, amp2Type->{Δ,Σ}/{A}] prints information about the system's representations, amplitudes, and sum rules and adds formatted sum rules and amplitude vectors to the system association.
 
 ## Documentation
 ### FlaSRHelp
-FlaSRHelp[function] prints extended documentation on a function's arguments, options, and outputs.
+FlaSRHelp[function] prints extended documentation on a FlaSR function's arguments, options, and outputs.
 
 Arguments:
 - function (Symbol): The name of a function from the FlaSR Mathematica package.
@@ -33,7 +33,7 @@ Returns:
 - An ExternalFunction object indicating the FlaSR.py file has been loaded into the Python session.
 
 ### generateASRs
-generateASRs[in,h,out] finds all amplitudes and amplitude sum rules (ASRs) for a given system.
+generateASRs[in,h,out] finds amplitudes and amplitude sum rules (ASRs) for a given system.
 
 Arguments:
 - in (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the incoming state.
@@ -59,8 +59,8 @@ Returns:
 		- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 		- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
 		- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
-	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) at each order of breaking.
-	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) corresponding to each order of breaking.
+	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
+	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.
 
 ### findA2SRMat
 findA2SRMat[ASRMat] finds the A2SR matrix for a given ASR matrix.
@@ -72,7 +72,7 @@ Returns:
 - A2SRMat (List): Matrix of A2SR coefficients derived from the ASR matrix. Note: this assumes differential observables.
 
 ### generateSRs
-generateSRs[in,h,out] finds all amplitudes, amplitude sum rules (ASRs), and amplitude-squared sum rules (A2SRs) for a given system.
+generateSRs[in,h,out] finds amplitudes, amplitude sum rules (ASRs), and amplitude-squared sum rules (A2SRs) for a given system.
 
 Arguments:
 - in (List): Contains U-spins (Real) or particle multiplets (List of Strings) in the incoming state.
@@ -99,11 +99,11 @@ Returns:
 		- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 		- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
 		- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
-	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) at each order of breaking.
-	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) corresponding to each order of breaking.
+	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
+	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.
 	- \"Unique amp pairs\" (List): Contains indices (Real) of amplitude pairs corresponding to unique channels after integration. Only appears for physical systems with obs->\"Int\".
-	- \"n A2SRs\" (List): Contains the number of amplitude-squared sum rules (Real) at each order of breaking.
-	- \"A2SRs\" (List): Contains matrices of amplitude-squared sum rule coefficients (Real) corresponding to each order of breaking.
+	- \"n A2SRs\" (List): Contains the number of amplitude-squared sum rules (Real) found at each order of breaking.
+	- \"A2SRs\" (List): Contains matrices of amplitude-squared sum rule coefficients (Real) listed by order of breaking.
 	- \"SR extract\" (List): Contains sum rule coefficient matrices at the selected b. If only ampType (amp2Type) is specified, contains only ASR (A2SR) coefficients. If both ampType and amp2Type are specified, contains A2SR coefficients. Initialized to None by generateSRs and redefined after running printSystem.
 	- \"Amp vector\" (List): Either is a vector of formatted A-type amplitudes (or |A|^2 amplitudes-squared) (Symbols) or contains vectors of formatted a/s-type amplitudes (or Δ/Σ-type amplitudes-squared) (List of Symbols) for the system. Initialized to None by generateSRs and redefined after running printSystem.
 
@@ -154,7 +154,7 @@ Options:
 - showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitudes table (True) or not (False). Default: showFactors->False.
 
 ### numSRs
-numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules at each order of breaking.
+numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules found at each order of breaking.
 
 Arguments:
 - system (Association): A system association. See the documentation for generateSRs for details.
@@ -164,7 +164,7 @@ Options:
 - b (All|Real|List): Breaking order(s) at which to print sum rules. User can print sum rules to all possible orders of breaking (All), at a particular order (Real, 0 <= b <= highest order of breaking), or over a range of orders of breaking ({start b (min: 0), end b (max: highest order of breaking, or All), increment}). Default: b->All.
 
 Returns:
-- Number of amplitude (or amplitude-squared) sum rules at each order of breaking (List of Reals).
+- Number of amplitude (or amplitude-squared) sum rules found at each order of breaking (List of Reals).
 
 ### printSRs
 printSRs[system,ampType->{a,s}/{A} OR amp2Type->{Δ,Σ}/{A}] prints amplitude (or amplitude-squared) sum rules at each order of breaking and extracts the formatted sum rule matrices and amplitude vector(s) for manipulation.
