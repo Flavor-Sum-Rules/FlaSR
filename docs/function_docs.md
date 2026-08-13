@@ -58,7 +58,7 @@ Returns:
 		- \"Binary indices\" (List): Contains indices (Real), written in base 10, for an amplitude and its U-spin conjugate. Indices are derived by converting the n-tuples into binary numbers through '-' <-> 0 and '+' <-> 1 and removing commas.
 		- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 		- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
-		- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
+		- \"CKM\" (List): Contains weak interaction factors (Expression) from the Hamiltonian. Only appears for physical systems.
 	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
 	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.
 
@@ -98,10 +98,10 @@ Returns:
 		- \"Binary indices\" (List): Contains indices (Real), written in base 10, for an amplitude and its U-spin conjugate. Indices are derived by converting the n-tuples into binary numbers through '-' <-> 0 and '+' <-> 1 and removing commas.
 		- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 		- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
-		- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
+		- \"CKM\" (List): Contains weak interaction factors (Expression) from the Hamiltonian. Only appears for physical systems.
+		- \"Integrated channel #s\" (List): Contains numbers (Real) enumerating unique integrated channels by the order in which they appear in the amplitudes table. Only appears for physical systems with obs->\"Int\".
 	- \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
 	- \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.
-	- \"Unique amp pairs\" (List): Contains indices (Real) of amplitude pairs corresponding to unique channels after integration. Only appears for physical systems with obs->\"Int\".
 	- \"n A2SRs\" (List): Contains the number of amplitude-squared sum rules (Real) found at each order of breaking.
 	- \"A2SRs\" (List): Contains matrices of amplitude-squared sum rule coefficients (Real) listed by order of breaking.
 	- \"SR extract\" (List): Contains sum rule coefficient matrices at the selected b. If only ampType (amp2Type) is specified, contains only ASR (A2SR) coefficients. If both ampType and amp2Type are specified, contains A2SR coefficients. Initialized to None by generateSRs and redefined after running printSystem.
