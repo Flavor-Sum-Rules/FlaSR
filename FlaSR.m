@@ -42,7 +42,7 @@ system (Association): All information about the system's representations, amplit
 	- \"Binary indices\" (List): Contains indices (Real), written in base 10, for an amplitude and its U-spin conjugate. Indices are derived by converting the n-tuples into binary numbers through '-' <-> 0 and '+' <-> 1 and removing commas.
 	- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 	- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
-	- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
+	- \"CKM\" (List): Contains weak interaction factors (Expression) from the Hamiltonian. Only appears for physical systems.
 - \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
 - \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.";
 
@@ -80,8 +80,8 @@ system (Association): All information about the system's representations, amplit
 	- \"Binary indices\" (List): Contains indices (Real), written in base 10, for an amplitude and its U-spin conjugate. Indices are derived by converting the n-tuples into binary numbers through '-' <-> 0 and '+' <-> 1 and removing commas.
 	- \"mu\" (Real): mu-factor for the coordinate in the lattice used to derive sum rules.
 	- \"CG\" (Real): Clebsch-Gordan coefficient from symmetrization for systems without doublets. Equal to 1 for all amplitudes for a system with at least one doublet.
-	- \"CKM\" (List): Contains weak interaction factors (Real) from the Hamiltonian. Only appears for physical systems.
-	- \"Integrated channel #s\": Enumerates unique integrated channels by the order in which they appear in the amplitudes table. Only appears for physical systems with obs->\"Int\".
+	- \"CKM\" (List): Contains weak interaction factors (Expression) from the Hamiltonian. Only appears for physical systems.
+	- \"Integrated channel #s\" (List): Contains numbers (Real) enumerating unique integrated channels by the order in which they appear in the amplitude table. Only appears for physical systems with obs->\"Int\".
 - \"n ASRs\" (List): Contains the number of amplitude sum rules (Real) found at each order of breaking.
 - \"ASRs\" (List): Contains matrices of amplitude sum rule coefficients (Real) listed by order of breaking.
 - \"n A2SRs\" (List): Contains the number of amplitude-squared sum rules (Real) found at each order of breaking.
@@ -104,24 +104,24 @@ labelAmps::usage="labelAmps[system,colName,labels] modifies system to add a colu
 labelAmps::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
-colName (String): Name of new column to add to amplitudes table.
-labels (List): Contains labels (String) for each amplitude (or amplitude pair). Number of labels must equal number of amplitudes (or amplitude pairs).
+colName (String): Name of new column to add to amplitude table.
+labels (List): Contains labels (String) for each amplitude (or amplitude pair) in the order of appearance in the amplitude table. Number of labels must equal number of amplitudes (or amplitude pairs).
 
 Options:
 labeling (String): Labeling mode to indicate whether user is labeling single amplitudes (\"Amplitudes\") or amplitude pairs (\"Amplitude pairs\"). Default: labeling->\"Amplitudes\".
 
 Returns:
-system[[\"Amplitudes\"]] (List): The modified amplitudes table which includes a new column of user-defined labels. New/modified keys and values of amplitudes associations:
+system[[\"Amplitudes\"]] (List): The modified amplitude table which includes a new column of user-defined labels. New/modified keys and values of amplitudes associations:
 - colName (List|Any): Either contains user-defined labels (Any) for an amplitude and its U-spin conjugate or a single label (Any) for an amplitude pair.";
 
 unlabelAmps::usage="unlabelAmps[system,colNames] modifies system to remove column(s) from system[[\"Amplitudes\"]]."
 unlabelAmps::details=
 "Arguments:
 system (Association): A system association. See the documentation for generateSRs for details.
-colNames (String|List): Name(s) of column(s) to remove from amplitudes table.
+colNames (String|List): Name(s) of column(s) to remove from amplitude table.
 
 Returns:
-system[[\"Amplitudes\"]] (List): The modified amplitudes table from which the specified column(s) have been removed.";
+system[[\"Amplitudes\"]] (List): The modified amplitude table from which the specified column(s) have been removed.";
 
 printAmps::usage="printAmps[system] prints the system's amplitudes and definitions for a/s-type amplitudes and \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared.";
 printAmps::details=
@@ -129,7 +129,7 @@ printAmps::details=
 system (Association): A system association. See the documentation for generateSRs for details.
 
 Options:
-showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitudes table (True) or not (False). Default: showFactors->False.";
+showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitude table (True) or not (False). Default: showFactors->False.";
 
 numSRs::usage="numSRs[system,squared:False] returns the number of amplitude (or amplitude-squared) sum rules found at each order of breaking.";
 numSRs::details=
@@ -151,7 +151,7 @@ system (Association): A system association. See the documentation for generateSR
 Options:
 ampType (List): Contains 1 or 2 symbol(s) to select amplitude type. Convention is to set ampType->{A} for A-type amplitudes and ampType->{a,s} for a/s-type amplitudes. Default: ampType->None. Note: only one of ampType or amp2Type should be specified to print either ASRs or A2SRs; if both are specified, printSRs will print A2SRs by default.
 amp2Type (List): Contains 1 or 2 symbol(s) to select squared amplitude type. Convention is to set amp2Type->{A} for |A\!\(\*SuperscriptBox[\(|\), \(2\)]\) amplitudes-squared and amp2Type->{\[CapitalDelta],\[CapitalSigma]} for \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared. Default: amp2Type->None. Note: only one of ampType or amp2Type should be specified to print either ASRs or A2SRs; if both are specified, printSRs will print A2SRs by default.
-ampFormat (String): Labeling convention for displaying amplitudes. Options are physical process names (\"Processes\", only available for A-type amps), m quantum numbers (\"QNs\"), n-tuples (\"n-tuples\"), coordinate notation (\"Coords\", only available for a/s-type amps), numbered indices (\"Binary indices\"), or user-defined labels for a column of the amplitudes table (name of custom column). Default: ampFormat->\"n-tuples\" unless the system is a physical system, in which case ampFormat->\"Processes\".
+ampFormat (String): Labeling convention for displaying amplitudes. Options are physical process names (\"Processes\", only available for A-type amps), m quantum numbers (\"QNs\"), n-tuples (\"n-tuples\"), coordinate notation (\"Coords\", only available for a/s-type amps), numbered indices (\"Binary indices\"), or user-defined labels for a column of the amplitude table (name of custom column). Default: ampFormat->\"n-tuples\" unless the system is a physical system, in which case ampFormat->\"Processes\".
 showSRs (True|False): Indicates whether to print sum rules. Default: showSRs->True.
 expandSRs (True|False): Indicates whether to display each row of a sum rules matrix as an expanded algebraic expression of amplitudes (True) or to keep each row as a list of coefficients (False). Default: expandSRs->False.
 CKM (True|False): Indicates whether to include CKM factors in the sum rules. Default: CKM->False.
@@ -171,14 +171,14 @@ system (Association): A system association. See the documentation for generateSR
 Options:
 showReps (True|False): Indicates whether to print the system summary. Default: showReps->True.
 -----
-showAmps (True|False): Indicates whether to print the amplitudes table. Default: showAmps->True.
-showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitudes table (True) or not (False). Default: showFactors->False.
+showAmps (True|False): Indicates whether to print the amplitude table. Default: showAmps->True.
+showFactors (True|False): Indicates whether to print internal calculation factors from the sum rule algorithm in the amplitude table (True) or not (False). Default: showFactors->False.
 -----
 showASRs (True|False): Indicates whether to print ASRs. Default: showASRs->True. Note: while both ampType and amp2Type can be separately specified, the other formatting options (e.g., ampFormat) will be shared for printing both ASRs and A2SRs.
 showA2SRs (True|False): Indicates whether to print A2SRs. Default: showA2SRs->True. Note: while both ampType and amp2Type can be separately specified, the other formatting options (e.g., ampFormat) will be shared for printing both ASRs and A2SRs.
 ampType (List): Contains 1 or 2 symbol(s) to select amplitude type. Convention is to set ampType->{A} for A-type amplitudes and ampType->{a,s} for a/s-type amplitudes. Default: ampType->None. Note: only one of ampType or amp2Type should be specified to print either ASRs or A2SRs; if both are specified, printSRs will print A2SRs by default.
 amp2Type (List): Contains 1 or 2 symbol(s) to select squared amplitude type. Convention is to set amp2Type->{A} for |A\!\(\*SuperscriptBox[\(|\), \(2\)]\) amplitudes-squared and amp2Type->{\[CapitalDelta],\[CapitalSigma]} for \[CapitalDelta]/\[CapitalSigma]-type amplitudes-squared. Default: amp2Type->None. Note: only one of ampType or amp2Type should be specified to print either ASRs or A2SRs; if both are specified, printSRs will print A2SRs by default.
-ampFormat (String): Labeling convention for displaying amplitudes. Options are physical process names (\"Processes\", only available for A-type amps), m quantum numbers (\"QNs\"), n-tuples (\"n-tuples\"), coordinate notation (\"Coords\", only available for a/s-type amps), numbered indices (\"Binary indices\"), or user-defined labels for a column of the amplitudes table (name of custom column). Default: ampFormat->\"n-tuples\" unless the system is a physical system, in which case ampFormat->\"Processes\".
+ampFormat (String): Labeling convention for displaying amplitudes. Options are physical process names (\"Processes\", only available for A-type amps), m quantum numbers (\"QNs\"), n-tuples (\"n-tuples\"), coordinate notation (\"Coords\", only available for a/s-type amps), numbered indices (\"Binary indices\"), or user-defined labels for a column of the amplitude table (name of custom column). Default: ampFormat->\"n-tuples\" unless the system is a physical system, in which case ampFormat->\"Processes\".
 expandSRs (True|False): Indicates whether to display each row of a sum rules matrix as an expanded algebraic expression of amplitudes (True) or to keep each row as a list of coefficients (False). Default: expandSRs->False.
 CKM (True|False): Indicates whether to include CKM factors in the sum rules. Default: CKM->False.
 b (All|Real|List): Breaking order(s) at which to print sum rules. User can print sum rules to all possible orders of breaking (All), at a particular order (Real, 0 <= b <= highest order of breaking), or over a range of orders of breaking ({start b (min: 0), end b (max: highest order of breaking, or All), increment}). Default: b->All.
@@ -662,7 +662,7 @@ If[ampFormat=="Processes"&&!KeyExistsQ[amps[[1]],"Processes"],Message[printSRs::
 
 (* Format amplitude vector for printing *)
 ampsToVector[ampSym_Symbol]:=Module[{vector,rule},
-(* Turn inputted symbol(s) into indexed variable(s) indexed by the values in the selected column of the amplitudes table *)
+(* Turn inputted symbol(s) into indexed variable(s) indexed by the values in the selected column of the amplitude table *)
 vector=Map[ampSym[#]&,
 If[pairedBasis,
 (Switch[ampFormat, (* a/s amps *)
@@ -759,7 +759,7 @@ sysVal[["ASRs"]]
 ]; (* set SRs list to either ASRs or A2SRs *)
 
 
-(* Extract p factor, amplitudes table (reduced to unique integrated rows if necessary), and indices of self-conjugate amp pairs *)
+(* Extract p factor, amplitude table (reduced to unique integrated rows if necessary), and indices of self-conjugate amp pairs *)
 p=sysVal[["p factor"]];
 amplitudes=sysVal[["Amplitudes"]];
 uniqueAmps=If[squared&&(KeyExistsQ[amplitudes[[1]],"Integrated channel #s"]),Flatten[First/@Values[PositionIndex[Sort/@amplitudes[[All,"Integrated channel #s"]]]]]]; (* unique integrated amp pair rows *)
