@@ -125,7 +125,7 @@ labelAmps[system,colName,labels] modifies system to add a column of user-defined
 Arguments:
 - system (Association): A system association. See the documentation for generateSRs for details.
 - colName (String): Name of new column to add to amplitudes table.
-- labels (List): Contains labels (String) for each amplitude (or amplitude pair). Number of labels must equal number of amplitudes (or amplitude pairs).
+- labels (List): Contains labels (String) for each amplitude (or amplitude pair) in the order of appearance in the amplitudes table. Number of labels must equal number of amplitudes (or amplitude pairs).
 
 Options:
 - labeling (String): Labeling mode to indicate whether user is labeling single amplitudes (\"Amplitudes\") or amplitude pairs (\"Amplitude pairs\"). Default: labeling->\"Amplitudes\".
