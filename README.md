@@ -25,7 +25,10 @@ Please follow our [guide](docs/python_help.md) to ensure your computer is proper
    ```
    printSystem[system,ampType->{a,s},amp2Type->{Δ,Σ}];
    ```
-   The program will print information about the system's representations, amplitudes, amplitude sum rules, and amplitude-squared sum rules. A sum rule displayed at order b is interpreted to be broken by corrections of the next order, O(ε<sup>b+1</sup>), where ε is the small symmetry-breaking parameter (~20-30% for U-spin).
+
+The program will print information about the system's representations, amplitudes, amplitude sum rules, and amplitude-squared sum rules. A sum rule displayed at order b is interpreted to be broken by corrections of the next order, O(ε<sup>b+1</sup>), where ε is the small symmetry-breaking parameter (~20-30% for U-spin). For more information on interpreting the output in this example, please refer to Section 3.3 of our [paper](https://arxiv.org/abs/2608.26248).
+   
+   ![Output for a U-spin singlet going to two doublets via a triplet Hamiltonian](/imgs/sample_output.png)
 
 # Help
 
